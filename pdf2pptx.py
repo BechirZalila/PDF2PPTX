@@ -1,7 +1,15 @@
 import argparse
 from pdf2image import convert_from_path
 from pptx import Presentation
-from pptx.util import Inches
+from pptx.util import Inches, Pt
+
+# Function to calculate new slide dimensions while preserving the image's aspect ratio
+def calculate_slide_size(img_width, img_height):
+    # Standard slide size in inches (can be set as any initial value)
+    base_width = 10.0  # for example, 10 inches as the base width
+    img_ratio = img_width / img_height
+    slide_height = base_width / img_ratio
+    return Inches(base_width), Inches(slide_height)
 
 # Main function
 def pdf_to_pptx(pdf_file, pptx_file, skip_first, skip_pages):
@@ -24,10 +32,25 @@ def pdf_to_pptx(pdf_file, pptx_file, skip_first, skip_pages):
     for i, page in enumerate(pages):
         if i in skip_indices:
             continue
-        slide_layout = prs.slide_layouts[6]  # Blank slide
-        slide = prs.slides.add_slide(slide_layout)
+
+        # Save each page as an image (to access its size)
         img_path = 'temp_image.png'
         page.save(img_path, 'PNG')
+
+        # Get image size (in pixels)
+        img_width, img_height = page.size
+
+        
+        # Calculate new slide size based on the image's aspect ratio
+        slide_width, slide_height = calculate_slide_size(img_width, img_height)
+
+        # Adjust the slide size to match the image's aspect ratio
+        prs.slide_width = slide_width
+        prs.slide_height = slide_height
+
+        # Add slide and insert image
+        slide_layout = prs.slide_layouts[6]  # Blank slide
+        slide = prs.slides.add_slide(slide_layout)
         slide.shapes.add_picture(img_path, Inches(0), Inches(0), width=prs.slide_width, height=prs.slide_height)
 
     # Save the PowerPoint presentation
