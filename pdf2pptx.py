@@ -3,7 +3,8 @@ from pdf2image import convert_from_path
 from pptx import Presentation
 from pptx.util import Inches, Pt
 
-# Function to calculate new slide dimensions while preserving the image's aspect ratio
+# Function to calculate new slide dimensions while preserving the
+# image's aspect ratio
 def calculate_slide_size(img_width, img_height):
     # Standard slide size in inches (can be set as any initial value)
     base_width = 10.0  # for example, 10 inches as the base width
@@ -11,7 +12,8 @@ def calculate_slide_size(img_width, img_height):
     slide_height = base_width / img_ratio
     return Inches(base_width), Inches(slide_height)
 
-# Function to copy notes from one slide to another preserving the formatting
+# Function to copy notes from one slide to another preserving the
+# formatting
 def copy_notes(src_slide, dest_slide):
     if not src_slide.notes_slide or not src_slide.notes_slide.notes_text_frame:
         return
@@ -26,7 +28,8 @@ def copy_notes(src_slide, dest_slide):
 
     # Copy paragraphs and their formatting
     for paragraph in src_slide.notes_slide.notes_text_frame.paragraphs:
-        # Use the existing paragraph if it's the first, otherwise add a new one
+        # Use the existing paragraph if it's the first, otherwise add
+        # a new one
         if first_paragraph:
             dest_paragraph = dest_text_frame.paragraphs[0]
             first_paragraph = False
@@ -42,7 +45,8 @@ def copy_notes(src_slide, dest_slide):
             dest_run.font.underline = run.font.underline
             dest_run.font.size = run.font.size
 
-            # Check if the color exists and has an rgb attribute before setting it
+            # Check if the color exists and has an rgb attribute
+            # before setting it
             if run.font.color and hasattr(run.font.color, 'rgb') and run.font.color.rgb:
                 dest_run.font.color.rgb = run.font.color.rgb
 
@@ -92,7 +96,9 @@ def pdf_to_pptx(pdf_file, pptx_file, skip_first, skip_pages, notes_pptx=None):
         # Add slide and insert image
         slide_layout = prs.slide_layouts[6]  # Blank slide
         slide = prs.slides.add_slide(slide_layout)
-        slide.shapes.add_picture(img_path, Inches(0), Inches(0), width=prs.slide_width, height=prs.slide_height)
+        slide.shapes.add_picture(img_path,
+                                 Inches(0), Inches(0),
+                                 width=prs.slide_width, height=prs.slide_height)
 
         # Copy notes from the corresponding slide in <notes>.pptx
         if notes_prs and i < len(notes_prs.slides):
