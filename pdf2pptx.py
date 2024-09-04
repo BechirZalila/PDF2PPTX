@@ -51,9 +51,9 @@ def copy_notes(src_slide, dest_slide):
                 dest_run.font.color.rgb = run.font.color.rgb
 
 # Main function
-def pdf_to_pptx(pdf_file, pptx_file, skip_first, skip_pages, notes_pptx=None):
+def pdf_to_pptx(pdf_file, pptx_file, skip_first, skip_pages, dpi, notes_pptx=None):
     # Convert the PDF to images
-    pages = convert_from_path(pdf_file)
+    pages = convert_from_path(pdf_file, dpi=dpi)
 
     # Skip the first page if the option is specified
     if skip_first:
@@ -126,6 +126,9 @@ if __name__ == "__main__":
     parser.add_argument("--notes-pptx",
                         type=str, help="Existing PPTX file with notes to copy",
                         required=False)
+    parser.add_argument("--dpi",
+                        type=int, default=200,
+                        help="Resolution for the generated images (default: 200 DPI)")
 
     args = parser.parse_args()
 
@@ -136,4 +139,4 @@ if __name__ == "__main__":
         skip_pages = []
 
     # Call the function with the arguments
-    pdf_to_pptx(args.pdf_file, args.pptx_file, args.skip_first, skip_pages, args.notes_pptx)
+    pdf_to_pptx(args.pdf_file, args.pptx_file, args.skip_first, skip_pages, args.dpi, args.notes_pptx)
